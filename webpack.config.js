@@ -93,7 +93,7 @@ let targets = ["web", "node"].map(target => {
       target === "web"
         ? process.env.NODE_ENV === "development"
           ? [
-              new webpack.HotModuleReplacementPlugin(),
+              // new webpack.HotModuleReplacementPlugin(),
               new ExtractTextPlugin("style.css")
             ]
           : [
@@ -115,9 +115,9 @@ let targets = ["web", "node"].map(target => {
           : "#source-map"
         : false
   });
-  if (process.env.NODE_ENV === "development" && target === "web") {
-    obj.module.rules[0].use.push({ loader: "webpack-module-hot-accept" });
-  }
+  // if (process.env.NODE_ENV === "development" && target === "web") {
+  //   obj.module.rules[0].use.push({ loader: "webpack-module-hot-accept" });
+  // }
   return obj;
 });
 
