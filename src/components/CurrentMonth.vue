@@ -30,6 +30,7 @@ export default {
       } else {
         this.$store.commit("setCurrentMonth", this.month - 1);
       }
+      this.$store.commit("alterForm", false);
     },
     inc() {
       if (this.month == 12) {
@@ -38,6 +39,7 @@ export default {
       } else {
         this.$store.commit("setCurrentMonth", this.month + 1);
       }
+      this.$store.commit("alterForm", false);
     }
   }
 };
