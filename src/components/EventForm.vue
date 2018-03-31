@@ -43,9 +43,15 @@ export default {
       if (!this.description.length) {
         return;
       }
-      this.$store.commit("addEvent", this.description);
-      this.close();
-      this.description = "";
+      this.$store
+        .dispatch("addEvent", this.description)
+        .then(() => {
+          this.close();
+          this.description = "";
+        })
+        .catch(e => {
+          console.error(e);
+        });
     }
   },
   directives: {

@@ -5,6 +5,9 @@ const app = express();
 const path = require("path");
 const fs = require("fs");
 const http = require("http");
+const bodyParser = require("body-parser");
+
+app.use(bodyParser.json());
 
 app.use("/public", express.static(path.join(__dirname, "public")));
 app.use("/dist", express.static(path.join(__dirname, "dist")));
@@ -12,6 +15,13 @@ app.use("/dist", express.static(path.join(__dirname, "dist")));
 app.get("/", (req, res) => {
   let template = fs.readFileSync(path.resolve("./index.html"), "utf-8");
   res.send(template);
+});
+
+let event = [];
+app.post("/add_event", (req, res) => {
+  console.log("received");
+  event.push(req.body);
+  res.sendStatus(200);
 });
 
 const server = http.createServer(app);
