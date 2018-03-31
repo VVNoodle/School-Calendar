@@ -6,17 +6,27 @@
 export default {
   props: ["day"],
   computed: {
+    isToday() {
+      return this.day.isSame(this.$moment(), "day");
+    },
+    isBefore() {
+      return this.day.isSameOrBefore(this.$moment(), "day");
+    },
     classObject() {
-      const isToday = this.day.isSame(this.$moment(), "day");
       return {
         day: true,
-        today: isToday,
-        past: this.day.isSameOrBefore(this.$moment(), "day") && !isToday
+        today: this.isToday,
+        past: this.isBefore && !this.isToday
       };
     }
   },
   methods: {
     captureClick(event) {
+      if (!(this.isBefore && !this.isToday)) {
+        this.$store.commit("alterForm", true);
+      } else {
+        this.$store.commit("alterForm", false);
+      }
       this.$store.commit("eventFormPos", {
         x: event.clientX,
         y: event.clientY
