@@ -3,10 +3,15 @@
     <h1>
       Login
   </h1>
+  <a href="/auth/google">Log in</a>
 </div>  
 </template>
 
 <script>
-export default {};
+export default {
+  methods: {
+    login() {}
+  }
+};
 </script>
 

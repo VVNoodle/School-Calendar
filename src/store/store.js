@@ -15,7 +15,8 @@ export default new Vuex.Store({
     y: 0,
     active: false,
     events: [],
-    time: moment()
+    time: moment(),
+    loggedIn: false
   },
   mutations: {
     setCurrentMonth(state, payload) {

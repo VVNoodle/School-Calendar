@@ -1,7 +1,6 @@
 require("dotenv").config({ silent: true });
 
 const express = require("express");
-const app = express();
 const path = require("path");
 const fs = require("fs");
 const http = require("http");
@@ -9,6 +8,23 @@ const bodyParser = require("body-parser");
 const moment = require("moment-timezone");
 moment.tz.setDefault("UTC");
 const serialize = require("serialize-javascript");
+
+const expressVue = require("express-vue");
+
+const app = express();
+
+const vueOptions = {
+  head: {
+    title: "Page Title",
+    meta: [
+      { property: "og:title", content: "Page Title" },
+      { name: "twitter:title", content: "Page Title" }
+    ]
+  },
+  rootPath: path.join(__dirname, "/src/components/")
+};
+const expressVueMiddleware = expressVue.init(vueOptions);
+app.use(expressVueMiddleware);
 
 app.use(bodyParser.json());
 

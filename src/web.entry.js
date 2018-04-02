@@ -1,11 +1,9 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import VueResource from "vue-resource";
 import Routes from "./routes";
 import "./style.scss";
 import store from "./store/store";
 
-Vue.use(VueResource);
 Vue.use(VueRouter);
 
 import moment from "moment-timezone";
