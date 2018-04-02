@@ -3,7 +3,7 @@
     <h1>
       Login
   </h1>
-  <a href="/auth/google">Log in</a>
+  <a href="/auth/google">Login</a>
 </div>  
 </template>
 

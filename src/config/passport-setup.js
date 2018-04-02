@@ -36,7 +36,8 @@ passport.use(
           // need to create new user
           new User({
             username: profile.displayName,
-            googleId: profile.id
+            googleId: profile.id,
+            events: []
           })
             .save()
             .then(newUser => {

@@ -15,7 +15,8 @@ export default {
   computed: {
     events() {
       return this.$store.state.events.filter(event => {
-        return event.date.isSame(this.day, "day");
+        const convertToDate = this.$moment(event.date);
+        return convertToDate.isSame(this.day, "day");
       });
     },
     isToday() {

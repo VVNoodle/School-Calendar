@@ -8,34 +8,15 @@ const bodyParser = require("body-parser");
 const moment = require("moment-timezone");
 moment.tz.setDefault("UTC");
 const serialize = require("serialize-javascript");
-
-const expressVue = require("express-vue");
-
-const app = express();
-
-const vueOptions = {
-  head: {
-    title: "Page Title",
-    meta: [
-      { property: "og:title", content: "Page Title" },
-      { name: "twitter:title", content: "Page Title" }
-    ]
-  },
-  rootPath: path.join(__dirname, "/src/components/")
-};
-const expressVueMiddleware = expressVue.init(vueOptions);
-app.use(expressVueMiddleware);
-
-app.use(bodyParser.json());
-
-//************************************************************************
-const authRoutes = require("./src/controllers/auth-routes");
-const profileRoutes = require("./src/controllers/profile-routes");
 const mongoose = require("mongoose");
+const User = require("./src/models/user-model");
+const app = express();
 const cookieSession = require("cookie-session");
 const passport = require("passport");
-
 require("./src/config/passport-setup");
+const getEvents = require("./src/config/get-events");
+
+app.use(bodyParser.json());
 
 // set up properties for key
 app.use(
@@ -57,39 +38,71 @@ mongoose.connect(process.env.DBURI, () => {
 });
 
 // set up routes
-app.use("/auth", authRoutes);
-
-app.use("/profile", profileRoutes);
-//************************************************************************
-
 app.use("/public", express.static(path.join(__dirname, "public")));
 app.use("/dist", express.static(path.join(__dirname, "dist")));
+const authRoutes = require("./src/controllers/auth-routes");
+app.use("/auth", authRoutes);
+const profileRoutes = require("./src/controllers/profile-routes");
+app.use("/profile", profileRoutes);
 
-let events = [
-  {
-    description: "weee wooo",
-    date: moment("2018-03-04", "YYYY-MM-DD")
-  }
-];
+let events = [];
+let user = {};
 app.get("/", (req, res) => {
-  let template = fs.readFileSync(path.resolve("./index.html"), "utf-8");
-  let contentMarker = " <!--APP-->";
-  res.send(
-    template.replace(
-      contentMarker,
-      `<script>var __INITIAL_STATE__ = ${serialize(events)}</script>`
-    )
-  );
+  if (req.user) {
+    user = req.user;
+
+    User.findOne({
+      googleId: user.googleId
+    }).then(actualUser => {
+      let template = fs.readFileSync(path.resolve("./index.html"), "utf-8");
+      let contentMarker = " <!--APP-->";
+      console.log("we rise " + actualUser);
+      res.send(
+        template.replace(
+          contentMarker,
+          `<script>var __INITIAL_STATE__ = ${serialize(
+            actualUser.events
+          )}</script>`
+        )
+      );
+    });
+  } else {
+    if (!events) {
+      events = [{}];
+    }
+
+    let template = fs.readFileSync(path.resolve("./index.html"), "utf-8");
+    let contentMarker = " <!--APP-->";
+    console.log("we rise " + events);
+    res.send(
+      template.replace(
+        contentMarker,
+        `<script>var __INITIAL_STATE__ = ${serialize(events)}</script>`
+      )
+    );
+  }
 });
 
 app.post("/add_event", (req, res) => {
-  console.log("received");
   events.push(req.body);
+  User.findOneAndUpdate(
+    {
+      googleId: req.user.googleId
+    },
+    {
+      $push: {
+        events: req.body
+      }
+    },
+    { new: true }
+  ).then(user => {
+    console.log("add: " + user);
+  });
   res.sendStatus(200);
 });
 
+// set up server
 const server = http.createServer(app);
-
 if (process.env.NODE_ENV === "development") {
   const reload = require("reload");
   const reloadServer = reload(server, app);

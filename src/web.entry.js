@@ -18,12 +18,7 @@ Object.defineProperty(Vue.prototype, "$moment", {
 
 import App from "./components/App.vue";
 
-let events = window.__INITIAL_STATE__.map(data => {
-  return {
-    description: data.description,
-    date: moment(data.date)
-  };
-});
+let events = window.__INITIAL_STATE__;
 let initialState = Object.assign({}, store.state, {
   events
 });

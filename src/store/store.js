@@ -16,7 +16,11 @@ export default new Vuex.Store({
     active: false,
     events: [],
     time: moment(),
-    loggedIn: false
+    loggedIn: false,
+    user: {
+      username: "",
+      googleId: ""
+    }
   },
   mutations: {
     setCurrentMonth(state, payload) {
@@ -37,6 +41,9 @@ export default new Vuex.Store({
     },
     eventFormDate(state, payload) {
       state.time = payload;
+    },
+    updateUser(state, payload) {
+      state.user = payload;
     }
   },
   actions: {
