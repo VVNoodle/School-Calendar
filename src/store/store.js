@@ -9,17 +9,12 @@ import Axios from "axios";
 
 export default new Vuex.Store({
   state: {
-    currentYear: 2018,
-    currentMonth: 3,
+    currentYear: moment().year(),
+    currentMonth: moment().month() + 1,
     x: 0,
     y: 0,
     active: false,
-    events: [
-      {
-        description: "Random event",
-        date: moment("2018-03-04", "YYYY-MM-DD")
-      }
-    ],
+    events: [],
     time: moment()
   },
   mutations: {

@@ -6,21 +6,69 @@ const path = require("path");
 const fs = require("fs");
 const http = require("http");
 const bodyParser = require("body-parser");
+const moment = require("moment-timezone");
+moment.tz.setDefault("UTC");
+const serialize = require("serialize-javascript");
 
 app.use(bodyParser.json());
+
+//************************************************************************
+const authRoutes = require("./src/controllers/auth-routes");
+const profileRoutes = require("./src/controllers/profile-routes");
+const mongoose = require("mongoose");
+const cookieSession = require("cookie-session");
+const passport = require("passport");
+
+require("./src/config/passport-setup");
+
+// set up properties for key
+app.use(
+  cookieSession({
+    maxAge: 24 * 60 * 60 * 1000,
+    keys: [process.env.COOKIEKEY]
+  })
+);
+// initialize passport
+app.use(passport.initialize());
+
+// alter the req object and change the 'user' value
+// that is currently the session id (from cookie) to actual user object
+app.use(passport.session());
+
+// connect to mongodb
+mongoose.connect(process.env.DBURI, () => {
+  console.log("Connected to mongodb");
+});
+
+// set up routes
+app.use("/auth", authRoutes);
+
+app.use("/profile", profileRoutes);
+//************************************************************************
 
 app.use("/public", express.static(path.join(__dirname, "public")));
 app.use("/dist", express.static(path.join(__dirname, "dist")));
 
+let events = [
+  {
+    description: "weee wooo",
+    date: moment("2018-03-04", "YYYY-MM-DD")
+  }
+];
 app.get("/", (req, res) => {
   let template = fs.readFileSync(path.resolve("./index.html"), "utf-8");
-  res.send(template);
+  let contentMarker = " <!--APP-->";
+  res.send(
+    template.replace(
+      contentMarker,
+      `<script>var __INITIAL_STATE__ = ${serialize(events)}</script>`
+    )
+  );
 });
 
-let event = [];
 app.post("/add_event", (req, res) => {
   console.log("received");
-  event.push(req.body);
+  events.push(req.body);
   res.sendStatus(200);
 });
 
@@ -34,7 +82,4 @@ if (process.env.NODE_ENV === "development") {
 
 server.listen(process.env.PORT, function() {
   console.log(`Example app listening on port ${process.env.PORT}!`);
-  if (process.env.NODE_ENV === "development") {
-    // require("open")(`http://localhost:${process.env.PORT}`);
-  }
 });

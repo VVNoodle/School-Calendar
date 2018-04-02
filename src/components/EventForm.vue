@@ -3,7 +3,14 @@
       <h4>Add an event</h4>
         <p>{{date}}</p>
       <div class="text">
-          <input type="text" v-model="description" @keyup.enter="create" v-focus>
+          <input type="text" v-model="description" @keyup.prevent.enter="create" v-focus>
+          <div id="checkboxes">
+            <input type="checkbox" name="tag" value="CMPE110" v-model="checked">
+            <label for="CMPE110">CMPE 110</label> 
+            <br>
+            <input type="checkbox" name="tag" value="CMPS183" v-model="checked">
+            <label for="CMPS183">CMPS 183</label>
+          </div>
       </div>
       <div class="buttons">
           <button @click="create">Create</button>
@@ -16,7 +23,8 @@
 export default {
   data() {
     return {
-      description: ""
+      description: "",
+      checked: []
     };
   },
   computed: {
@@ -34,6 +42,9 @@ export default {
     date() {
       return this.$store.state.time.format("dddd, MMM, Do");
     }
+  },
+  watch: {
+    checked() {}
   },
   methods: {
     close() {
